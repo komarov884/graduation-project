@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration>
+    <appender name="errorsFile" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="./logs/errors/errors.log" />
+		<param name="DatePattern" value="'.' yyyy-MM-dd" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss} %-5p %t %c{1}:%M:%L] - %m%n" />
+        </layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+				<param name="LevelMin" value="error"/>
+				<param name="AcceptOnMatch" value="true"/>
+		</filter>
+    </appender>
+	
+	<appender name="warningsFile" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="./logs/warnings/warnings.log" />
+		<param name="DatePattern" value="'.' yyyy-MM-dd" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss} %-5p %t %c{1}:%M:%L] - %m%n" />
+        </layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+				<param name="LevelMax" value="warn"/>
+				<param name="AcceptOnMatch" value="true"/>
+		</filter>
+    </appender>
+	
+	<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss} %-5p %t %c{1}:%M:%L] - %m%n" />
+        </layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+				<param name="LevelMax" value="warn"/>
+				<param name="AcceptOnMatch" value="true"/>
+		</filter>
+    </appender>
+	
+	<logger name="ru.komarov.university">
+        <level value="TRACE"/>
+        <appender-ref ref="warningsFile"/>
+		<appender-ref ref="stdout"/>
+    </logger>
+	
+	<root>
+		<level value="ERROR" />
+		<appender-ref ref="errorsFile" />
+	</root>
+</log4j:configuration>

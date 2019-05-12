@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.komarov.university.calibrator.controller.MainFormController">
+   <children>
+      <Canvas fx:id="testCanvas" height="200.0" layoutX="134.0" layoutY="54.0" width="200.0" onMouseClicked="#adf" /> <!-- TODO ! -->
+   </children>
+</AnchorPane>
