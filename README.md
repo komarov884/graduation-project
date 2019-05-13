@@ -1,4 +1,4 @@
-< graduation-project >
+< snapshots-calibrator >
 =====================
 
 The graduation project on the "Software engineering" direction.
