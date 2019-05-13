@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.komarov.university.calibrator.controller.MainFormController">
+<AnchorPane prefHeight="694.0" prefWidth="1070.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.komarov.university.calibrator.controller.MainFormController">
    <children>
-      <Canvas fx:id="testCanvas" height="200.0" layoutX="134.0" layoutY="54.0" width="200.0" onMouseClicked="#adf" /> <!-- TODO ! -->
+      <Canvas fx:id="testCanvas" height="598.0" layoutX="305.0" layoutY="86.0" onMouseClicked="#adf" width="751.0" /><!-- TODO ! -->
+      <Button fx:id="btOpen" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#openFile" text="Open" />
+      <Label fx:id="label" layoutX="14.0" layoutY="50.0" text="..." />
    </children>
 </AnchorPane>
