@@ -15,19 +15,13 @@ import java.util.Map;
  */
 @Getter
 public class Calibration {
-    public static final int AREA_THRESHOLD = 2;
-
-    //private final ReferenceSnapshot topReferenceSnapshot;//todo Это не надо. вместо этого сделать набор референсных точкек. айди->точка, точка
-    //private final ReferenceSnapshot bottomReferenceSnapshot;
+    public static final int AREA_THRESHOLD = 2; //todo move????
 
     private final Pair<Integer, Integer> snapshotIdsRange;
     private final Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap;
 
-    //private final int originalLowestTempAreaCodeOnTopReferenceSnapshot;
-    //private final int originalHighestTempAreaCodeOnTopReferenceSnapshot;
-//
-    //private final int originalLowestTempAreaCodeOnBottomReferenceSnapshot;
-    //private final int originalHighestTempAreaCodeOnBottomReferenceSnapshot;
+    private final Pair<Integer, Integer> originalCodesOnTopSnapshot;
+    private final Pair<Integer, Integer> originalCodesOnBottomSnapshot;
 
     @Setter
     private Integer targetLowestTempAreaCode;
@@ -35,46 +29,18 @@ public class Calibration {
     private Integer targetHighestTempAreaCode;
 
     public Calibration(Pair<Integer, Integer> snapshotIdsRange,
-                       Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap) {
+                       Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap,
+                       Pair<Integer, Integer> originalCodesOnTopSnapshot,
+                       Pair<Integer, Integer> originalCodesOnBottomSnapshot,
+                       Integer targetLowestTempAreaCode,
+                       Integer targetHighestTempAreaCode) {
         this.snapshotIdsRange = snapshotIdsRange;
         this.snapshotIdReferencePointsMap = snapshotIdReferencePointsMap;
+        this.originalCodesOnTopSnapshot = originalCodesOnTopSnapshot;
+        this.originalCodesOnBottomSnapshot = originalCodesOnBottomSnapshot;
+        this.targetLowestTempAreaCode = targetLowestTempAreaCode;
+        this.targetHighestTempAreaCode = targetHighestTempAreaCode;
     }
-
-//public Calibration(ReferenceSnapshot topReferenceSnapshot,
-    //                   ReferenceSnapshot bottomReferenceSnapshot,
-    //                   int targetLowestTempAreaCode,
-    //                   int targetHighestTempAreaCode) {
-    //    this.topReferenceSnapshot = topReferenceSnapshot;
-    //    this.bottomReferenceSnapshot = bottomReferenceSnapshot;
-    //    Snapshot topSnapshot = topReferenceSnapshot.getSnapshot();
-    //    Point2D topLowestTempPoint = topReferenceSnapshot.getLowestTempPoint();
-    //    Point2D topHighestTempPoint = topReferenceSnapshot.getHighestTempPoint();
-    //    this.originalLowestTempAreaCodeOnTopReferenceSnapshot = topSnapshot.getAreaAverageCode(
-    //            topLowestTempPoint.getX(),
-    //            topLowestTempPoint.getY(),
-    //            AREA_THRESHOLD
-    //    );
-    //    this.originalHighestTempAreaCodeOnTopReferenceSnapshot = topSnapshot.getAreaAverageCode(
-    //            topHighestTempPoint.getX(),
-    //            topHighestTempPoint.getY(),
-    //            AREA_THRESHOLD
-    //    );
-    //    Snapshot bottomSnapshot = bottomReferenceSnapshot.getSnapshot();
-    //    Point2D bottomLowestTempPoint = bottomReferenceSnapshot.getLowestTempPoint();
-    //    Point2D bottomHighestTempPoint = bottomReferenceSnapshot.getHighestTempPoint();
-    //    this.originalLowestTempAreaCodeOnBottomReferenceSnapshot = bottomSnapshot.getAreaAverageCode(
-    //            bottomLowestTempPoint.getX(),
-    //            bottomLowestTempPoint.getY(),
-    //            AREA_THRESHOLD
-    //    );
-    //    this.originalHighestTempAreaCodeOnBottomReferenceSnapshot = bottomSnapshot.getAreaAverageCode(
-    //            bottomHighestTempPoint.getX(),
-    //            bottomHighestTempPoint.getY(),
-    //            AREA_THRESHOLD
-    //    );
-    //    this.targetLowestTempAreaCode = targetLowestTempAreaCode;
-    //    this.targetHighestTempAreaCode = targetHighestTempAreaCode;
-    //}
 
     @Override
     public String toString() {

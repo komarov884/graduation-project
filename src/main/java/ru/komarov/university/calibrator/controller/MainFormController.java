@@ -1,5 +1,7 @@
 package ru.komarov.university.calibrator.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,6 +24,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.dialog.ProgressDialog;
+import ru.komarov.university.calibrator.calibrator.Calibrator;
+import ru.komarov.university.calibrator.calibrator.CalibratorImpl;
 import ru.komarov.university.calibrator.domain.Calibration;
 import ru.komarov.university.calibrator.domain.ReferenceSnapshot;
 import ru.komarov.university.calibrator.domain.Snapshot;
@@ -57,9 +61,9 @@ public class MainFormController implements Initializable {
     private static final String STATUS_BAR_CODE_TEMPLATE = "Код: %5s";
 
     @FXML
-    private Button btOpen;
+    private Button btOpen; //todo need it?
     @FXML
-    private Button btDoMagic;
+    private Button btCalibrate;
 
     @FXML
     private Canvas canvasTop;
@@ -69,7 +73,40 @@ public class MainFormController implements Initializable {
     private Canvas canvasSpectrum;
 
     @FXML
-    private Label label; //TODO rename
+    private Label labelTopCanvas;
+    @FXML
+    private Label labelBottomCanvas;
+
+    @FXML
+    private Label labelRangeValue;
+    @FXML
+    private Label labelXTopLowestAreaValue;
+    @FXML
+    private Label labelYTopLowestAreaValue;
+    @FXML
+    private Label labelOriginalCodeTopLowestAreaValue;
+    @FXML
+    private Label labelXBottomLowestAreaValue;
+    @FXML
+    private Label labelYBottomLowestAreaValue;
+    @FXML
+    private Label labelOriginalCodeBottomLowestAreaValue;
+    @FXML
+    private Label labelTargetCodeLowestTempAreaValue;
+    @FXML
+    private Label labelXTopHighestAreaValue;
+    @FXML
+    private Label labelYTopHighestAreaValue;
+    @FXML
+    private Label labelOriginalCodeTopHighestAreaValue;
+    @FXML
+    private Label labelXBottomHighestAreaValue;
+    @FXML
+    private Label labelYBottomHighestAreaValue;
+    @FXML
+    private Label labelOriginalCodeBottomHighestAreaValue;
+    @FXML
+    private Label labelTargetCodeHighestTempAreaValue;
 
     @FXML
     private ListView<Snapshot> listViewSnapshots;
@@ -87,7 +124,8 @@ public class MainFormController implements Initializable {
     private GraphicsContext canvasBottomGc;
     private GraphicsContext canvasSpectrumGc;
 
-    private Drawer drawer;
+    private Drawer drawer; //todo interface
+    private Calibrator calibrator;
 
     private Map<Integer, Snapshot> snapshots;
     private List<Calibration> calibrations;
@@ -102,9 +140,17 @@ public class MainFormController implements Initializable {
         canvasSpectrumGc = canvasSpectrum.getGraphicsContext2D();
 
         drawer = new Drawer();
+        calibrator = new CalibratorImpl();
         snapshots = new HashMap<>();
         calibrations = new ArrayList<>();
 
+        listViewCalibrations.getSelectionModel()
+                .selectedItemProperty()
+                .addListener(
+                        getCalibrationChangeListener()
+                );
+
+        clearLabels();
         clearCanvases();
         drawSpectrum();
         initializeStatusBar();
@@ -114,7 +160,7 @@ public class MainFormController implements Initializable {
     public void btOpenOnAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MBV-files", "*.mbv"));
-        fileChooser.setInitialDirectory(new File("D:\\Documents\\Универ\\ВКР (диплом)\\500 ИК файлов формата mbv"));
+        fileChooser.setInitialDirectory(new File("C:\\Users\\Vasilii_Komarov\\Desktop\\university\\ВКР (диплом)\\500 ИК файлов формата mbv"));
         //fileChooser.setInitialDirectory(new File(System.getProperty("user.dir"))); //TODO !
         List<File> files = fileChooser.showOpenMultipleDialog(null);
 
@@ -147,13 +193,29 @@ public class MainFormController implements Initializable {
         listViewSnapshots.getItems().clear();
         listViewCalibrations.getItems().clear();
         snapshots.clear();
+        calibrations.clear();
         topReferenceSnapshot = null;
         bottomReferenceSnapshot = null;
         clearCanvases();
     }
 
     @FXML
-    public void btDoMagicOnAction() {
+    public void btSelectTopCanvasOnAction() {
+        //todo
+    }
+
+    @FXML
+    public void btSelectBottomCanvasOnAction() {
+        //todo
+    }
+
+    @FXML
+    public void btSaveOnAction() {
+        //todo
+    }
+
+    @FXML
+    public void btCalibrateOnAction() {
         if (Objects.nonNull(topReferenceSnapshot)
                 && Objects.nonNull(topReferenceSnapshot.getLowestTempPoint())
                 && Objects.nonNull(topReferenceSnapshot.getHighestTempPoint())
@@ -163,9 +225,6 @@ public class MainFormController implements Initializable {
 
             //todo some checks! ! ! ! что калибровка начинается строго с первого снимка, что калибровки идут с перекрытием
             //todo bottom не может быть раньше чем top. и не могут быть одним и тем же.
-
-            //int numberOfSnapshots = bottomReferenceSnapshot.getSnapshot().getNumber()
-            //        - topReferenceSnapshot.getSnapshot().getNumber() + 1;
 
             Snapshot topSnapshot = topReferenceSnapshot.getSnapshot();
             Snapshot bottomSnapshot = bottomReferenceSnapshot.getSnapshot();
@@ -194,72 +253,60 @@ public class MainFormController implements Initializable {
                 if (highestTempAreaCode < minHighestTempAreaCode) {
                     minHighestTempAreaCode = highestTempAreaCode;
                 }
-                snapshotIdReferencePointsMap.put(snapshot.getNumber(), new ImmutablePair<>(new Point2D(xLowestTempPoint, yLowestTempPoint), new Point2D(xHighestTempPoint, yHighestTempPoint)));
-                //markedSnapshots.put(snapshot.getNumber(), new MarkedSnapshot(snapshot, new Point2D(xLowestTempPoint, yLowestTempPoint), new Point2D(xHighestTempPoint, yHighestTempPoint)));
-                //markedSnapshots.put(snapshot.getNumber(), new MarkedSnapshot(snapshot, lowestTempAreaCode, highestTempAreaCode));
+                snapshotIdReferencePointsMap.put(
+                        snapshot.getNumber(),
+                        new ImmutablePair<>(
+                                new Point2D(xLowestTempPoint, yLowestTempPoint),
+                                new Point2D(xHighestTempPoint, yHighestTempPoint)
+                        )
+                );
+
             }
 
-            //Calibration calibration = new Calibration(topReferenceSnapshot, bottomReferenceSnapshot, maxLowestTempAreaCode, minHighestTempAreaCode);
-            Calibration calibration = new Calibration(new ImmutablePair(topSnapshot.getNumber(), bottomSnapshot.getNumber()), snapshotIdReferencePointsMap);
-            calibration.setTargetLowestTempAreaCode(maxLowestTempAreaCode); //TODO setter? constr?
-            calibration.setTargetHighestTempAreaCode(minHighestTempAreaCode);
+            Calibration calibration = new Calibration(
+                    new ImmutablePair(
+                            topSnapshot.getNumber(),
+                            bottomSnapshot.getNumber()
+                    ),
+                    snapshotIdReferencePointsMap,
+                    new ImmutablePair<>(
+                            topSnapshot.getAreaAverageCode(topLowestTempPoint, Calibration.AREA_THRESHOLD),
+                            topSnapshot.getAreaAverageCode(topHighestTempPoint, Calibration.AREA_THRESHOLD)
+                    ),
+                    new ImmutablePair<>(
+                            bottomSnapshot.getAreaAverageCode(bottomLowestTempPoint, Calibration.AREA_THRESHOLD),
+                            bottomSnapshot.getAreaAverageCode(bottomHighestTempPoint, Calibration.AREA_THRESHOLD)
+                    ),
+                    maxLowestTempAreaCode,
+                    minHighestTempAreaCode
+            );
             calibrations.add(calibration);
             listViewCalibrations.getItems().add(calibration);
             System.out.println();
 
-            for (int i = topSnapshot.getNumber(); i <= bottomSnapshot.getNumber(); i++) { //todo метод который принимает калибровку. - калибратор
-                Snapshot snapshot = snapshots.get(i);
-                int[][] codesMap = snapshot.getCodesMap();
-                Pair<Point2D, Point2D> referencePoints = snapshotIdReferencePointsMap.get(i);
-                int lowestTempAreaCode = snapshot.getAreaAverageCode(referencePoints.getLeft(), Calibration.AREA_THRESHOLD);//todo это выполняется дважды! может добавить температуру в какую то структуру?!
-                int highestTempAreaCode = snapshot.getAreaAverageCode(referencePoints.getRight(), Calibration.AREA_THRESHOLD);
-                for (int x = 0; x < snapshot.getWidth(); x++) {
-                    for (int y = 0; y < snapshot.getHeight(); y++) {
-                        int oldCode = codesMap[y][x];
-                        codesMap[y][x] = (((minHighestTempAreaCode - maxLowestTempAreaCode) * (oldCode - lowestTempAreaCode)) / (highestTempAreaCode - lowestTempAreaCode)) + maxLowestTempAreaCode;
-                    }
-                }
-            }
+            calibrator.calibrate(snapshots, calibration);
+            //todo update right status bar
 
             drawer.drawReferenceSnapshot(canvasTopGc, topReferenceSnapshot);
             drawer.drawReferenceSnapshot(canvasBottomGc, bottomReferenceSnapshot);
             //todo do calibration;
 
             if (calibrations.size() > 1) {
-                for (int i = calibrations.size() - 2; i >= 0; i++) { //с предпоследнего до первого
+                for (int i = calibrations.size() - 2; i >= 0; i--) { //с предпоследнего до первого
                     Calibration previousCalibration = calibrations.get(i); //TODO REFACTOR!!! RENAME!!!!!!!!!!!!!!
                     Snapshot snapshot = snapshots.get(previousCalibration.getSnapshotIdsRange().getRight());
                     Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap12345 = previousCalibration.getSnapshotIdReferencePointsMap();
                     int lowestCode = snapshot.getAreaAverageCode(snapshotIdReferencePointsMap12345.get(snapshot.getNumber()).getLeft(), Calibration.AREA_THRESHOLD);
                     int highestCode = snapshot.getAreaAverageCode(snapshotIdReferencePointsMap12345.get(snapshot.getNumber()).getRight(), Calibration.AREA_THRESHOLD);
-                    if (lowestCode > calibration.getTargetLowestTempAreaCode()) {
-                        calibration.setTargetLowestTempAreaCode(lowestCode);
+                    if (lowestCode > previousCalibration.getTargetLowestTempAreaCode()) {
+                        previousCalibration.setTargetLowestTempAreaCode(lowestCode);
                     }
-                    if (highestCode < calibration.getTargetHighestTempAreaCode()) {
-                        calibration.setTargetHighestTempAreaCode(highestCode);
+                    if (highestCode < previousCalibration.getTargetHighestTempAreaCode()) {
+                        previousCalibration.setTargetHighestTempAreaCode(highestCode);
                     }
 
-
-//todo ======================================== CHECK ALGORITHM!!!!!!!!!!!!!! and extract
-                    for (int j = calibration.getSnapshotIdsRange().getLeft(); j <= calibration.getSnapshotIdsRange().getRight(); j++) { //todo метод который принимает калибровку. - калибратор
-                        Snapshot snpsht = snapshots.get(i);
-                        int[][] codesMap = snpsht.getCodesMap(); //todo NPE!
-                        Pair<Point2D, Point2D> referencePoints = snapshotIdReferencePointsMap12345.get(i);
-                        int lowestTempAreaCode = snpsht.getAreaAverageCode(referencePoints.getLeft(), Calibration.AREA_THRESHOLD);//todo это выполняется дважды! может добавить температуру в какую то структуру?!
-                        int highestTempAreaCode = snpsht.getAreaAverageCode(referencePoints.getRight(), Calibration.AREA_THRESHOLD);
-                        for (int x = 0; x < snpsht.getWidth(); x++) {
-                            for (int y = 0; y < snpsht.getHeight(); y++) {
-                                int oldCode = codesMap[y][x];
-                                codesMap[y][x] = (((minHighestTempAreaCode - maxLowestTempAreaCode) * (oldCode - lowestTempAreaCode)) / (highestTempAreaCode - lowestTempAreaCode)) + maxLowestTempAreaCode;
-                            }
-                        }
-                    }
-//todo ========================================
-
-
-
-
-
+                    calibrator.calibrate(snapshots, previousCalibration);
+                    //todo update right status bar
 
 
                 }
@@ -451,19 +498,74 @@ public class MainFormController implements Initializable {
     private void clearCanvases() {
         drawer.fillCanvas(canvasTopGc, canvasTop.getWidth(), canvasTop.getHeight(), Color.WHITESMOKE);
         drawer.fillCanvas(canvasBottomGc, canvasBottom.getWidth(), canvasBottom.getHeight(), Color.WHITESMOKE);
+        labelTopCanvas.setText(StringUtils.EMPTY);
+        labelBottomCanvas.setText(StringUtils.EMPTY);
     }
 
     private void selectTopReferenceSnapshot(Snapshot snapshot) {
         topReferenceSnapshot = new ReferenceSnapshot(snapshot);
         drawer.drawReferenceSnapshot(canvasTopGc, topReferenceSnapshot);
+        labelTopCanvas.setText(snapshot.toString());
     }
 
     private void selectBottomReferenceSnapshot(Snapshot snapshot) {
         bottomReferenceSnapshot = new ReferenceSnapshot(snapshot);
         drawer.drawReferenceSnapshot(canvasBottomGc, bottomReferenceSnapshot);
+        labelBottomCanvas.setText(snapshot.toString());
+    }
+
+    private ChangeListener<Calibration> getCalibrationChangeListener() {
+        return (observable, oldValue, newValue) -> {
+            Integer topSnapshotId = newValue.getSnapshotIdsRange().getLeft();
+            Integer bottomSnapshotId = newValue.getSnapshotIdsRange().getRight();
+
+            labelRangeValue.setText(String.format("[%05d] - [%05d]", topSnapshotId, bottomSnapshotId));
+
+            Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap = newValue.getSnapshotIdReferencePointsMap();
+            Pair<Point2D, Point2D> topSnapshotReferencePoints = snapshotIdReferencePointsMap.get(topSnapshotId);
+            Pair<Point2D, Point2D> bottomSnapshotReferencePoints = snapshotIdReferencePointsMap.get(bottomSnapshotId);
+            Pair<Integer, Integer> originalCodesOnTopSnapshot = newValue.getOriginalCodesOnTopSnapshot();
+            Pair<Integer, Integer> originalCodesOnBottomSnapshot = newValue.getOriginalCodesOnBottomSnapshot();
+
+            labelXTopLowestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getLeft().getX()));
+            labelYTopLowestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getLeft().getY()));
+            labelOriginalCodeTopLowestAreaValue.setText(String.valueOf(originalCodesOnTopSnapshot.getLeft()));
+            labelXBottomLowestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getLeft().getX()));
+            labelYBottomLowestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getLeft().getY()));
+            labelOriginalCodeBottomLowestAreaValue.setText(String.valueOf(originalCodesOnBottomSnapshot.getLeft()));
+            labelTargetCodeLowestTempAreaValue.setText(String.valueOf(newValue.getTargetLowestTempAreaCode()));
+
+            labelXTopHighestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getRight().getX()));
+            labelYTopHighestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getRight().getY()));
+            labelOriginalCodeTopHighestAreaValue.setText(String.valueOf(originalCodesOnTopSnapshot.getRight()));
+            labelXBottomHighestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getRight().getX()));
+            labelYBottomHighestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getRight().getY()));
+            labelOriginalCodeBottomHighestAreaValue.setText(String.valueOf(originalCodesOnBottomSnapshot.getRight()));
+            labelTargetCodeHighestTempAreaValue.setText(String.valueOf(newValue.getTargetHighestTempAreaCode()));
+        };
     }
 
     private boolean isDoubleClick(MouseEvent event) {
         return event.getClickCount() == 2;
+    }
+
+    private void clearLabels() {
+        labelTopCanvas.setText(StringUtils.EMPTY);
+        labelBottomCanvas.setText(StringUtils.EMPTY);
+        labelRangeValue.setText(StringUtils.EMPTY);
+        labelXTopLowestAreaValue.setText(StringUtils.EMPTY);
+        labelYTopLowestAreaValue.setText(StringUtils.EMPTY);
+        labelOriginalCodeTopLowestAreaValue.setText(StringUtils.EMPTY);
+        labelXBottomLowestAreaValue.setText(StringUtils.EMPTY);
+        labelYBottomLowestAreaValue.setText(StringUtils.EMPTY);
+        labelOriginalCodeBottomLowestAreaValue.setText(StringUtils.EMPTY);
+        labelTargetCodeLowestTempAreaValue.setText(StringUtils.EMPTY);
+        labelXTopHighestAreaValue.setText(StringUtils.EMPTY);
+        labelYTopHighestAreaValue.setText(StringUtils.EMPTY);
+        labelOriginalCodeTopHighestAreaValue.setText(StringUtils.EMPTY);
+        labelXBottomHighestAreaValue.setText(StringUtils.EMPTY);
+        labelYBottomHighestAreaValue.setText(StringUtils.EMPTY);
+        labelOriginalCodeBottomHighestAreaValue.setText(StringUtils.EMPTY);
+        labelTargetCodeHighestTempAreaValue.setText(StringUtils.EMPTY);
     }
 }

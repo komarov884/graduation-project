@@ -3,7 +3,7 @@ package ru.komarov.university.calibrator.calibrator;
 import ru.komarov.university.calibrator.domain.Calibration;
 import ru.komarov.university.calibrator.domain.Snapshot;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -12,5 +12,5 @@ import java.util.List;
  * @author Vasilii Komarov
  */
 public interface Calibrator {
-    void calibrate(List<Snapshot> snapshots, Calibration calibration);
+    void calibrate(Map<Integer, Snapshot> snapshots, Calibration calibration);
 }
