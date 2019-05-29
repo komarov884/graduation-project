@@ -13,108 +13,228 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.StatusBar?>
 
-<AnchorPane prefHeight="824.0" prefWidth="1311.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.komarov.university.calibrator.controller.MainFormController">
+<AnchorPane maxHeight="720.0" maxWidth="0.0" prefHeight="720.0" prefWidth="1285.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.komarov.university.calibrator.controller.MainFormController">
 
    <children>
-      <Button fx:id="btOpen" layoutX="17.0" layoutY="78.0" mnemonicParsing="false" onAction="#btOpenOnAction" prefHeight="25.0" prefWidth="74.0" text="Открыть" />
-      <Label fx:id="labelTopCanvas" layoutX="464.0" layoutY="341.0" prefHeight="17.0" prefWidth="325.0" text="[value]" />
-      <ListView fx:id="listViewSnapshots" layoutX="100.0" layoutY="53.0" onMouseClicked="#listViewSnapshotsOnMouseClicked" prefHeight="631.0" prefWidth="339.0" />
-      <Pane layoutX="464.0" layoutY="40.0" prefHeight="290.0" prefWidth="386.0" styleClass="pane">
+      <Pane layoutX="6.0" layoutY="680.0" prefHeight="17.0" prefWidth="1278.0" styleClass="pane">
          <children>
-            <Canvas fx:id="canvasTop" height="288.0" layoutX="1.0" layoutY="1.0" onMouseClicked="#canvasTopOnMouseClicked" onMouseExited="#canvasTopOnMouseExited" onMouseMoved="#canvasTopOnMouseMoved" width="384.0" />
+            <Canvas fx:id="canvasSpectrum" height="15.0" layoutX="1.0" layoutY="1.0" onMouseExited="#canvasSpectrumOnMouseExited" onMouseMoved="#canvasSpectrumOnMouseMoved" width="1276.0" />
          </children>
       </Pane>
-      <Button fx:id="btClear" layoutX="17.0" layoutY="118.0" mnemonicParsing="false" onAction="#btClearOnAction" prefHeight="25.0" prefWidth="74.0" text="Очистить" />
-      <Button fx:id="btSelectTopCanvas" layoutX="799.0" layoutY="341.0" mnemonicParsing="false" onAction="#btSelectTopCanvasOnAction" text="Выбрать" />
-      <ListView fx:id="listViewCalibrations" layoutX="884.0" layoutY="53.0" prefHeight="190.0" prefWidth="339.0" />
-      <Pane layoutX="464.0" layoutY="380.0" prefHeight="290.0" prefWidth="386.0" styleClass="pane">
-         <children>
-            <Canvas fx:id="canvasBottom" height="288.0" layoutX="1.0" layoutY="1.0" onMouseClicked="#canvasBottomOnMouseClicked" onMouseExited="#canvasBottomOnMouseExited" onMouseMoved="#canvasBottomOnMouseMoved" width="384.0" />
-         </children>
-      </Pane>
-      <Label fx:id="labelBottomCanvas" layoutX="472.0" layoutY="682.0" prefHeight="17.0" prefWidth="325.0" text="[value]" />
-      <Button fx:id="btSelectBottomCanvas" layoutX="797.0" layoutY="678.0" mnemonicParsing="false" onAction="#btSelectBottomCanvasOnAction" text="Выбрать" />
-      <Pane layoutX="17.0" layoutY="736.0" prefHeight="32.0" prefWidth="1278.0" styleClass="pane">
-         <children>
-            <Canvas fx:id="canvasSpectrum" height="30.0" layoutX="1.0" layoutY="1.0" onMouseExited="#canvasSpectrumOnMouseExited" onMouseMoved="#canvasSpectrumOnMouseMoved" width="1276.0" />
-         </children>
-      </Pane>
-      <Button fx:id="btCalibrate" layoutX="8.0" layoutY="160.0" mnemonicParsing="false" onAction="#btCalibrateOnAction" prefHeight="25.0" prefWidth="85.0" text="Выполнить" />
-      <StatusBar fx:id="statusBar" layoutX="412.0" layoutY="753.0" prefHeight="200.0" prefWidth="200.0" text="" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <MenuBar layoutX="104.0" layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StatusBar fx:id="statusBar" layoutY="753.0" prefHeight="200.0" prefWidth="200.0" text="" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="false" text="Файл">
             <items>
               <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
+          <Menu mnemonicParsing="false" text="Редактировать">
             <items>
               <MenuItem mnemonicParsing="false" text="Delete" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Help">
+          <Menu mnemonicParsing="false" text="Помощь">
             <items>
               <MenuItem mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
-      <Label layoutX="242.0" layoutY="30.0" text="Снимки" textOverrun="CLIP">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Label>
-      <TitledPane animated="false" collapsible="false" layoutX="884.0" layoutY="261.0" prefHeight="463.0" prefWidth="339.0" text="Информация о калибровке">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="260.0" prefWidth="337.0">
+      <Pane fx:id="paneMainButtons" layoutX="5.0" layoutY="26.0" prefHeight="652.0" prefWidth="87.0">
+         <children>
+            <Button fx:id="btSave" layoutX="1.0" layoutY="130.0" mnemonicParsing="false" onAction="#btSaveOnAction" prefHeight="25.0" prefWidth="85.0" text="Сохранить" />
+            <Button fx:id="btCalibrate" layoutX="1.0" layoutY="95.0" mnemonicParsing="false" onAction="#btCalibrateOnAction" prefHeight="25.0" prefWidth="85.0" text="Выполнить" />
+            <Button fx:id="btClear" layoutX="1.0" layoutY="60.0" mnemonicParsing="false" onAction="#btClearOnAction" prefHeight="25.0" prefWidth="85.0" text="Очистить" />
+            <Button fx:id="btOpen" layoutX="1.0" layoutY="25.0" mnemonicParsing="false" onAction="#btOpenOnAction" prefHeight="25.0" prefWidth="85.0" text="Открыть" />
+         </children>
+      </Pane>
+      <Pane layoutX="97.0" layoutY="26.0" prefHeight="652.0" prefWidth="342.0">
+         <children>
+            <Label alignment="CENTER" layoutX="1.0" layoutY="1.0" prefHeight="20.0" prefWidth="340.0" text="Снимки" textOverrun="CLIP">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <ListView fx:id="listViewSnapshots" layoutX="1.0" layoutY="25.0" onMouseClicked="#listViewSnapshotsOnMouseClicked" prefHeight="626.0" prefWidth="340.0" />
+         </children>
+      </Pane>
+      <Pane layoutX="500.0" layoutY="26.0" prefHeight="652.0" prefWidth="390.0">
+         <children>
+            <Pane layoutX="1.0" layoutY="1.0" prefHeight="326.0" prefWidth="388.0">
                <children>
-                  <Label fx:id="labelRange" layoutX="14.0" layoutY="14.0" text="Диапазон снимков:" />
-                  <Label fx:id="labelLowestTempArea" layoutX="14.0" layoutY="48.0" text="Область с наименьшей температурой" />
-                  <Label fx:id="labelXTopLowestArea" layoutX="68.0" layoutY="82.0" text="x:" />
-                  <Label fx:id="labelYTopLowestArea" layoutX="211.0" layoutY="82.0" text="y:" />
-                  <Label fx:id="labelOriginalCodeTopLowestArea" layoutX="68.0" layoutY="99.0" text="Исходный код:" />
-                  <Label fx:id="labelTargetCodeLowestTempArea" layoutX="39.0" layoutY="167.0" text="Целевое значение:" />
-                  <Label fx:id="labelHighestTempArea" layoutX="17.0" layoutY="202.0" text="Область с наибольшей температурой" />
-                  <Label fx:id="labelXTopHighestArea" layoutX="68.0" layoutY="236.0" text="x:" />
-                  <Label fx:id="labelYTopHighestArea" layoutX="211.0" layoutY="236.0" text="y:" />
-                  <Label fx:id="labelOriginalCodeTopHighestArea" layoutX="68.0" layoutY="254.0" text="Исходный код:" />
-                  <Label fx:id="labelRangeValue" layoutX="180.0" layoutY="14.0" text="[value]" />
-                  <Label fx:id="labelXTopLowestAreaValue" layoutX="129.0" layoutY="82.0" text="[value]" />
-                  <Label fx:id="labelYTopLowestAreaValue" layoutX="257.0" layoutY="82.0" text="[value]" />
-                  <Label fx:id="labelOriginalCodeTopLowestAreaValue" layoutX="257.0" layoutY="99.0" text="[value]" />
-                  <Label fx:id="labelTargetCodeLowestTempAreaValue" layoutX="257.0" layoutY="167.0" text="[value]" />
-                  <Label fx:id="labelXTopHighestAreaValue" layoutX="126.0" layoutY="236.0" text="[value]" />
-                  <Label fx:id="labelYTopHighestAreaValue" layoutX="257.0" layoutY="236.0" text="[value]" />
-                  <Label fx:id="labelOriginalCodeTopHighestAreaValue" layoutX="257.0" layoutY="254.0" text="[value]" />
-                  <Label fx:id="labelTopSnapshotLowestTempArea" layoutX="39.0" layoutY="65.0" text="Первый снимок" />
-                  <Label fx:id="labelBottomSnapshotLowestTempArea" layoutX="39.0" layoutY="116.0" text="Последний снимок" />
-                  <Label fx:id="labelXBottomLowestArea" layoutX="68.0" layoutY="133.0" text="x:" />
-                  <Label fx:id="labelOriginalCodeBottomLowestArea" layoutX="68.0" layoutY="150.0" text="Исходный код:" />
-                  <Label fx:id="labelXBottomHighestArea" layoutX="68.0" layoutY="287.0" text="x:" />
-                  <Label fx:id="labelOriginalCodeBottomHighestArea" layoutX="67.0" layoutY="304.0" text="Исходный код:" />
-                  <Label fx:id="labelTargetCodeHighestTempArea" layoutX="42.0" layoutY="320.0" text="Целевое значение:" />
-                  <Label fx:id="labelXBottomLowestAreaValue" layoutX="127.0" layoutY="133.0" text="[value]" />
-                  <Label fx:id="labelYBottomLowestArea" layoutX="211.0" layoutY="133.0" text="y:" />
-                  <Label fx:id="labelYBottomLowestAreaValue" layoutX="257.0" layoutY="133.0" text="[value]" />
-                  <Label fx:id="labelOriginalCodeBottomLowestAreaValue" layoutX="257.0" layoutY="150.0" text="[value]" />
-                  <Label fx:id="labelXBottomHighestAreaValue" layoutX="130.0" layoutY="287.0" text="[value]" />
-                  <Label fx:id="labelYBottomHighestArea" layoutX="211.0" layoutY="286.0" text="y:" />
-                  <Label fx:id="labelYBottomHighestAreaValue" layoutX="257.0" layoutY="286.0" text="[value]" />
-                  <Label fx:id="labelOriginalCodeBottomHighestAreaValue" layoutX="257.0" layoutY="303.0" text="[value]" />
-                  <Label fx:id="labelTargetCodeHighestTempAreaValue" layoutX="257.0" layoutY="318.0" text="[value]" />
-                  <Label fx:id="labelTopSnapshotHighestTempArea" layoutX="39.0" layoutY="219.0" text="Первый снимок" />
-                  <Label fx:id="labelBottomSnapshotHighestTempArea" layoutX="39.0" layoutY="271.0" text="Последний снимок" />
+                  <Pane layoutX="1.0" layoutY="1.0" prefHeight="290.0" prefWidth="386.0" styleClass="pane">
+                     <children>
+                        <Canvas fx:id="canvasTop" height="288.0" layoutX="1.0" layoutY="1.0" onMouseClicked="#canvasTopOnMouseClicked" onMouseExited="#canvasTopOnMouseExited" onMouseMoved="#canvasTopOnMouseMoved" width="384.0" />
+                     </children>
+                  </Pane>
+                  <Label fx:id="labelTopCanvas" layoutX="5.0" layoutY="299.0" prefHeight="17.0" prefWidth="308.0" text="[value]" />
+                  <Button fx:id="btSelectTopCanvas" layoutX="318.0" layoutY="295.0" mnemonicParsing="false" onAction="#btSelectTopCanvasOnAction" prefHeight="25.0" prefWidth="65.0" text="Выбрать" />
                </children>
-            </AnchorPane>
-        </content>
-      </TitledPane>
-      <Label layoutX="1011.0" layoutY="30.0" text="Калибровки">
-         <font>
-            <Font name="System Bold" size="14.0" />
-         </font>
-      </Label>
-      <Button fx:id="btSave" layoutX="14.0" layoutY="201.0" mnemonicParsing="false" onAction="#btSaveOnAction" text="Сохранить" />
+            </Pane>
+            <Pane layoutX="1.0" layoutY="325.0" prefHeight="326.0" prefWidth="388.0">
+               <children>
+                  <Pane layoutX="1.0" layoutY="1.0" prefHeight="290.0" prefWidth="386.0" styleClass="pane">
+                     <children>
+                        <Canvas fx:id="canvasBottom" height="288.0" layoutX="1.0" layoutY="1.0" onMouseClicked="#canvasBottomOnMouseClicked" onMouseExited="#canvasBottomOnMouseExited" onMouseMoved="#canvasBottomOnMouseMoved" width="384.0" />
+                     </children>
+                  </Pane>
+                  <Label fx:id="labelBottomCanvas" layoutX="5.0" layoutY="299.0" prefHeight="17.0" prefWidth="308.0" text="[value]" />
+                  <Button fx:id="btSelectBottomCanvas" layoutX="318.0" layoutY="295.0" mnemonicParsing="false" onAction="#btSelectBottomCanvasOnAction" prefHeight="25.0" prefWidth="65.0" text="Выбрать" />
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+      <Pane layoutX="943.0" layoutY="26.0" prefHeight="652.0" prefWidth="342.0">
+         <children>
+            <Label alignment="CENTER" layoutX="1.0" layoutY="1.0" prefHeight="20.0" prefWidth="340.0" text="Калибровки">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <ListView fx:id="listViewCalibrations" layoutX="1.0" layoutY="25.0" prefHeight="215.0" prefWidth="340.0" />
+            <TitledPane animated="false" collapsible="false" layoutX="1.0" layoutY="241.0" prefHeight="410.0" prefWidth="340.0" text="Информация о калибровке">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="260.0" prefWidth="337.0">
+                     <children>
+                        <Pane layoutY="10.0" prefHeight="20.0" prefWidth="337.0">
+                           <children>
+                              <Label fx:id="labelRange" layoutX="10.0" text="Диапазон снимков:" />
+                              <Label fx:id="labelRangeValue" layoutX="200.0" text="[value]" />
+                           </children>
+                        </Pane>
+                        <Pane layoutY="40.0" prefHeight="160.0" prefWidth="337.0">
+                           <children>
+                              <Pane prefHeight="20.0" prefWidth="337.0">
+                                 <children>
+                                    <Label fx:id="labelLowestTempArea" layoutX="10.0" text="Область с наименьшей температурой" />
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="37.0" layoutY="20.0" prefHeight="140.0" prefWidth="300.0">
+                                 <children>
+                                    <Pane prefHeight="20.0" prefWidth="300.0">
+                                       <children>
+                                          <Label fx:id="labelTopSnapshotLowestTempArea" text="Первый снимок" />
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="30.0" layoutY="20.0" prefHeight="40.0" prefWidth="270.0">
+                                       <children>
+                                          <Pane prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelXTopLowestArea" text="x:" />
+                                                <Label fx:id="labelXTopLowestAreaValue" layoutX="40.0" text="[value]" />
+                                                <Label fx:id="labelYTopLowestArea" layoutX="140.0" text="y:" />
+                                                <Label fx:id="labelYTopLowestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children>
+                                          </Pane>
+                                          <Pane layoutY="20.0" prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelOriginalCodeTopLowestArea" text="Исходный код:" />
+                                                <Label fx:id="labelOriginalCodeTopLowestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children></Pane>
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutY="60.0" prefHeight="20.0" prefWidth="300.0">
+                                       <children>
+                                          <Label fx:id="labelBottomSnapshotLowestTempArea" text="Последний снимок" />
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="30.0" layoutY="80.0" prefHeight="40.0" prefWidth="270.0">
+                                       <children>
+                                          <Pane prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelXBottomLowestArea" text="x:" />
+                                                <Label fx:id="labelXBottomLowestAreaValue" layoutX="40.0" text="[value]" />
+                                                <Label fx:id="labelYBottomLowestArea" layoutX="140.0" text="y:" />
+                                                <Label fx:id="labelYBottomLowestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children>
+                                          </Pane>
+                                          <Pane layoutY="20.0" prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelOriginalCodeBottomLowestArea" text="Исходный код:" />
+                                                <Label fx:id="labelOriginalCodeBottomLowestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children>
+                                          </Pane>
+                                       </children></Pane>
+                                    <Pane layoutY="120.0" prefHeight="20.0" prefWidth="300.0">
+                                       <children>
+                                          <Label fx:id="labelTargetCodeLowestTempArea" text="Целевое значение:" />
+                                          <Label fx:id="labelTargetCodeLowestTempAreaValue" layoutX="210.0" text="[value]" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </Pane>
+                        <Pane layoutY="210.0" prefHeight="160.0" prefWidth="337.0">
+                           <children>
+                              <Pane prefHeight="20.0" prefWidth="337.0">
+                                 <children>
+                                    <Label fx:id="labelHighestTempArea" layoutX="10.0" text="Область с наибольшей температурой" />
+                                 </children>
+                              </Pane>
+                              <Pane layoutX="37.0" layoutY="20.0" prefHeight="140.0" prefWidth="300.0">
+                                 <children>
+                                    <Pane prefHeight="20.0" prefWidth="300.0">
+                                       <children>
+                                          <Label fx:id="labelTopSnapshotHighestTempArea" text="Первый снимок" />
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="30.0" layoutY="20.0" prefHeight="40.0" prefWidth="270.0">
+                                       <children>
+                                          <Pane prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelXTopHighestArea" text="x:" />
+                                                <Label fx:id="labelXTopHighestAreaValue" layoutX="40.0" text="[value]" />
+                                                <Label fx:id="labelYTopHighestArea" layoutX="140.0" text="y:" />
+                                                <Label fx:id="labelYTopHighestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children>
+                                          </Pane>
+                                          <Pane layoutY="20.0" prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelOriginalCodeTopHighestArea" text="Исходный код:" />
+                                                <Label fx:id="labelOriginalCodeTopHighestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children>
+                                          </Pane>
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutY="60.0" prefHeight="20.0" prefWidth="300.0">
+                                       <children>
+                                          <Label fx:id="labelBottomSnapshotHighestTempArea" text="Последний снимок" />
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutX="30.0" layoutY="80.0" prefHeight="40.0" prefWidth="270.0">
+                                       <children>
+                                          <Pane prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelXBottomHighestArea" text="x:" />
+                                                <Label fx:id="labelXBottomHighestAreaValue" layoutX="40.0" text="[value]" />
+                                                <Label fx:id="labelYBottomHighestArea" layoutX="140.0" text="y:" />
+                                                <Label fx:id="labelYBottomHighestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children></Pane>
+                                          <Pane layoutY="20.0" prefHeight="20.0" prefWidth="270.0">
+                                             <children>
+                                                <Label fx:id="labelOriginalCodeBottomHighestArea" text="Исходный код:" />
+                                                <Label fx:id="labelOriginalCodeBottomHighestAreaValue" layoutX="180.0" text="[value]" />
+                                             </children></Pane>
+                                       </children>
+                                    </Pane>
+                                    <Pane layoutY="120.0" prefHeight="20.0" prefWidth="300.0">
+                                       <children>
+                                          <Label fx:id="labelTargetCodeHighestTempArea" text="Целевое значение:" />
+                                          <Label fx:id="labelTargetCodeHighestTempAreaValue" layoutX="210.0" text="[value]" />
+                                       </children>
+                                    </Pane>
+                                 </children>
+                              </Pane>
+                           </children>
+                        </Pane>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </TitledPane>
+         </children>
+      </Pane>
    </children>
 
 </AnchorPane>

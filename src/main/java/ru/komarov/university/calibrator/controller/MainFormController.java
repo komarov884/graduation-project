@@ -116,6 +116,8 @@ public class MainFormController implements Initializable {
     @FXML
     private StatusBar statusBar;
 
+    private String initialDirectory;
+
     private Label labelX;
     private Label labelY;
     private Label labelCode;
@@ -150,18 +152,32 @@ public class MainFormController implements Initializable {
                         getCalibrationChangeListener()
                 );
 
+        setInitialDirectory();
         clearLabels();
         clearCanvases();
         drawSpectrum();
         initializeStatusBar();
     }
 
+    private void setInitialDirectory() {
+        initialDirectory = System.getProperty("user.dir");
+        String ws = System.getProperty("ws");
+        if (Objects.nonNull(ws)) {
+            if (WorkStation.HOME.name().equalsIgnoreCase(ws)) {
+                initialDirectory = "D:\\Documents\\Универ\\ВКР (диплом)\\500 ИК файлов формата mbv";
+            } else if (WorkStation.LAPTOP.name().equalsIgnoreCase(ws)) {
+                initialDirectory = "C:\\Users\\komar\\Desktop\\GW\\500 ИК файлов формата mbv";
+            } else if (WorkStation.WORK.name().equalsIgnoreCase(ws)) {
+                initialDirectory = "C:\\Users\\Vasilii_Komarov\\Desktop\\university\\ВКР (диплом)\\500 ИК файлов формата mbv";
+            }
+        }
+    }
+
     @FXML
     public void btOpenOnAction() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("MBV-files", "*.mbv"));
-        fileChooser.setInitialDirectory(new File("C:\\Users\\Vasilii_Komarov\\Desktop\\university\\ВКР (диплом)\\500 ИК файлов формата mbv"));
-        //fileChooser.setInitialDirectory(new File(System.getProperty("user.dir"))); //TODO !
+        fileChooser.setInitialDirectory(new File(initialDirectory));
         List<File> files = fileChooser.showOpenMultipleDialog(null);
 
         if (CollectionUtils.isNotEmpty(files)) {
@@ -196,6 +212,7 @@ public class MainFormController implements Initializable {
         calibrations.clear();
         topReferenceSnapshot = null;
         bottomReferenceSnapshot = null;
+        clearLabels();
         clearCanvases();
     }
 
@@ -516,32 +533,34 @@ public class MainFormController implements Initializable {
 
     private ChangeListener<Calibration> getCalibrationChangeListener() {
         return (observable, oldValue, newValue) -> {
-            Integer topSnapshotId = newValue.getSnapshotIdsRange().getLeft();
-            Integer bottomSnapshotId = newValue.getSnapshotIdsRange().getRight();
+            if (Objects.nonNull(newValue)) {
+                Integer topSnapshotId = newValue.getSnapshotIdsRange().getLeft();
+                Integer bottomSnapshotId = newValue.getSnapshotIdsRange().getRight();
 
-            labelRangeValue.setText(String.format("[%05d] - [%05d]", topSnapshotId, bottomSnapshotId));
+                labelRangeValue.setText(String.format("[%05d] - [%05d]", topSnapshotId, bottomSnapshotId));
 
-            Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap = newValue.getSnapshotIdReferencePointsMap();
-            Pair<Point2D, Point2D> topSnapshotReferencePoints = snapshotIdReferencePointsMap.get(topSnapshotId);
-            Pair<Point2D, Point2D> bottomSnapshotReferencePoints = snapshotIdReferencePointsMap.get(bottomSnapshotId);
-            Pair<Integer, Integer> originalCodesOnTopSnapshot = newValue.getOriginalCodesOnTopSnapshot();
-            Pair<Integer, Integer> originalCodesOnBottomSnapshot = newValue.getOriginalCodesOnBottomSnapshot();
+                Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap = newValue.getSnapshotIdReferencePointsMap();
+                Pair<Point2D, Point2D> topSnapshotReferencePoints = snapshotIdReferencePointsMap.get(topSnapshotId);
+                Pair<Point2D, Point2D> bottomSnapshotReferencePoints = snapshotIdReferencePointsMap.get(bottomSnapshotId);
+                Pair<Integer, Integer> originalCodesOnTopSnapshot = newValue.getOriginalCodesOnTopSnapshot();
+                Pair<Integer, Integer> originalCodesOnBottomSnapshot = newValue.getOriginalCodesOnBottomSnapshot();
 
-            labelXTopLowestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getLeft().getX()));
-            labelYTopLowestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getLeft().getY()));
-            labelOriginalCodeTopLowestAreaValue.setText(String.valueOf(originalCodesOnTopSnapshot.getLeft()));
-            labelXBottomLowestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getLeft().getX()));
-            labelYBottomLowestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getLeft().getY()));
-            labelOriginalCodeBottomLowestAreaValue.setText(String.valueOf(originalCodesOnBottomSnapshot.getLeft()));
-            labelTargetCodeLowestTempAreaValue.setText(String.valueOf(newValue.getTargetLowestTempAreaCode()));
+                labelXTopLowestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getLeft().getX()));
+                labelYTopLowestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getLeft().getY()));
+                labelOriginalCodeTopLowestAreaValue.setText(String.valueOf(originalCodesOnTopSnapshot.getLeft()));
+                labelXBottomLowestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getLeft().getX()));
+                labelYBottomLowestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getLeft().getY()));
+                labelOriginalCodeBottomLowestAreaValue.setText(String.valueOf(originalCodesOnBottomSnapshot.getLeft()));
+                labelTargetCodeLowestTempAreaValue.setText(String.valueOf(newValue.getTargetLowestTempAreaCode()));
 
-            labelXTopHighestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getRight().getX()));
-            labelYTopHighestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getRight().getY()));
-            labelOriginalCodeTopHighestAreaValue.setText(String.valueOf(originalCodesOnTopSnapshot.getRight()));
-            labelXBottomHighestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getRight().getX()));
-            labelYBottomHighestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getRight().getY()));
-            labelOriginalCodeBottomHighestAreaValue.setText(String.valueOf(originalCodesOnBottomSnapshot.getRight()));
-            labelTargetCodeHighestTempAreaValue.setText(String.valueOf(newValue.getTargetHighestTempAreaCode()));
+                labelXTopHighestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getRight().getX()));
+                labelYTopHighestAreaValue.setText(String.valueOf(topSnapshotReferencePoints.getRight().getY()));
+                labelOriginalCodeTopHighestAreaValue.setText(String.valueOf(originalCodesOnTopSnapshot.getRight()));
+                labelXBottomHighestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getRight().getX()));
+                labelYBottomHighestAreaValue.setText(String.valueOf(bottomSnapshotReferencePoints.getRight().getY()));
+                labelOriginalCodeBottomHighestAreaValue.setText(String.valueOf(originalCodesOnBottomSnapshot.getRight()));
+                labelTargetCodeHighestTempAreaValue.setText(String.valueOf(newValue.getTargetHighestTempAreaCode()));
+            }
         };
     }
 
@@ -567,5 +586,11 @@ public class MainFormController implements Initializable {
         labelYBottomHighestAreaValue.setText(StringUtils.EMPTY);
         labelOriginalCodeBottomHighestAreaValue.setText(StringUtils.EMPTY);
         labelTargetCodeHighestTempAreaValue.setText(StringUtils.EMPTY);
+    }
+
+    enum WorkStation {
+        HOME,
+        LAPTOP,
+        WORK
     }
 }
