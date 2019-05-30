@@ -20,10 +20,10 @@ public class CalibratorImpl implements Calibrator {
     public void calibrate(Map<Integer, Snapshot> snapshots, Calibration calibration) {
         if (Objects.isNull(calibration.getTargetHighestTempAreaCode())
                 || Objects.isNull(calibration.getTargetLowestTempAreaCode())) {
-            throw new RuntimeException();//todo
+            throw new RuntimeException(); //TODO: move to particular exception
         }
         if (MapUtils.isEmpty(snapshots)) {
-            throw new RuntimeException();//todo
+            throw new RuntimeException(); //TODO: move to particular exception
         }
 
         Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap
@@ -36,7 +36,7 @@ public class CalibratorImpl implements Calibrator {
             int[][] codesMap = snapshot.getCodesMap();
 
             Pair<Point2D, Point2D> referencePoints = snapshotIdReferencePointsMap.get(j);
-            int lowestTempAreaCode = snapshot.getAreaAverageCode(referencePoints.getLeft(), Calibration.AREA_THRESHOLD);//todo это выполняется дважды! может добавить температуру в какую то структуру?!
+            int lowestTempAreaCode = snapshot.getAreaAverageCode(referencePoints.getLeft(), Calibration.AREA_THRESHOLD); //TODO: this is do twice! add temperature to some structure?!
             int highestTempAreaCode = snapshot.getAreaAverageCode(referencePoints.getRight(), Calibration.AREA_THRESHOLD);
 
             for (int x = 0; x < snapshot.getWidth(); x++) {

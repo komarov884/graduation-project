@@ -1,24 +1,27 @@
 package ru.komarov.university.calibrator.controller;
 
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -59,11 +62,6 @@ public class MainFormController implements Initializable {
     private static final String STATUS_BAR_X_TEMPLATE = "x: %5s";
     private static final String STATUS_BAR_Y_TEMPLATE = "y: %5s";
     private static final String STATUS_BAR_CODE_TEMPLATE = "Код: %5s";
-
-    @FXML
-    private Button btOpen; //todo need it?
-    @FXML
-    private Button btCalibrate;
 
     @FXML
     private Canvas canvasTop;
@@ -126,7 +124,7 @@ public class MainFormController implements Initializable {
     private GraphicsContext canvasBottomGc;
     private GraphicsContext canvasSpectrumGc;
 
-    private Drawer drawer; //todo interface
+    private Drawer drawer; //TODO: extract interface
     private Calibrator calibrator;
 
     private Map<Integer, Snapshot> snapshots;
@@ -181,6 +179,7 @@ public class MainFormController implements Initializable {
         List<File> files = fileChooser.showOpenMultipleDialog(null);
 
         if (CollectionUtils.isNotEmpty(files)) {
+            btClearOnAction();
             Task filesPreprocessing = createFilesPreprocessing(files);
             ProgressDialog progressDialog = new ProgressDialog(filesPreprocessing);
             progressDialog.setContentText("Обработано:");
@@ -193,12 +192,11 @@ public class MainFormController implements Initializable {
             progressDialog.showAndWait();
 
             if (filesPreprocessing.isCancelled()) {
-                listViewSnapshots.getItems().clear();
-                snapshots.clear();
+                btClearOnAction();
             } else {
                 snapshots.values()
                         .forEach(snapshot -> listViewSnapshots.getItems().add(snapshot));
-                selectTopReferenceSnapshot(snapshots.get(1));
+                selectTopReferenceSnapshot(snapshots.get(1)); //todo INVESTIGATE it!!!
                 selectBottomReferenceSnapshot(snapshots.get(snapshots.size()));
             }
         }
@@ -218,17 +216,91 @@ public class MainFormController implements Initializable {
 
     @FXML
     public void btSelectTopCanvasOnAction() {
-        //todo
+        if (MapUtils.isEmpty(snapshots)) { // TODO: refactoring. DRY
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Нет загруженных снимков");
+            alert.setHeaderText("Невозможно выполнить операцию");
+            alert.setContentText("Необходимо загрузить снимки");
+            alert.showAndWait();
+        } else {
+            TextInputDialog dialog = new TextInputDialog(
+                    String.valueOf(
+                            snapshots.get(1).getNumber()
+                    )
+            );
+
+            dialog.setTitle("Выбрать");
+            dialog.setHeaderText("Введите номер снимка:");
+            dialog.setContentText("Номер снимка:");
+            TextField editor = dialog.getEditor();
+            editor.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) { //TODO: leading zeros
+                    editor.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            });
+
+            Optional<String> result = dialog.showAndWait();
+
+            result.ifPresent(name -> {
+                Snapshot snapshot = snapshots.get(Integer.valueOf(result.get()));
+                if (Objects.isNull(snapshot)) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Нет снимка с таким номером");
+                    alert.setHeaderText("Невозможно выполнить операцию");
+                    alert.setContentText("Выберите существующий снимок");
+                    alert.showAndWait();
+                } else {
+                    selectTopReferenceSnapshot(snapshot);
+                }
+            });
+        }
     }
 
     @FXML
     public void btSelectBottomCanvasOnAction() {
-        //todo
+        if (MapUtils.isEmpty(snapshots)) { // TODO: refactoring. DRY
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Нет загруженных снимков");
+            alert.setHeaderText("Невозможно выполнить операцию");
+            alert.setContentText("Необходимо загрузить снимки");
+            alert.showAndWait();
+        } else {
+            TextInputDialog dialog = new TextInputDialog(
+                    String.valueOf(
+                            snapshots.get(snapshots.size()).getNumber()
+                    )
+            );
+
+            dialog.setTitle("Выбрать");
+            dialog.setHeaderText("Введите номер снимка:");
+            dialog.setContentText("Номер снимка:");
+            TextField editor = dialog.getEditor();
+            editor.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("\\d*")) { //TODO: leading zeros
+                    editor.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            });
+
+            Optional<String> result = dialog.showAndWait();
+
+            result.ifPresent(name -> {
+                Snapshot snapshot = snapshots.get(Integer.valueOf(result.get()));
+                if (Objects.isNull(snapshot)) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Нет снимка с таким номером");
+                    alert.setHeaderText("Невозможно выполнить операцию");
+                    alert.setContentText("Выберите существующий снимок");
+                    alert.showAndWait();
+                } else {
+                    selectBottomReferenceSnapshot(snapshot);
+                }
+            });
+        }
     }
 
     @FXML
     public void btSaveOnAction() {
-        //todo
+        //TODO: implement
     }
 
     @FXML
@@ -240,8 +312,8 @@ public class MainFormController implements Initializable {
                 && Objects.nonNull(bottomReferenceSnapshot.getLowestTempPoint())
                 && Objects.nonNull(bottomReferenceSnapshot.getHighestTempPoint())) {
 
-            //todo some checks! ! ! ! что калибровка начинается строго с первого снимка, что калибровки идут с перекрытием
-            //todo bottom не может быть раньше чем top. и не могут быть одним и тем же.
+            //TODO: some checks! ! ! ! что калибровка начинается строго с первого снимка, что калибровки идут с перекрытием
+            //TODO: bottom не может быть раньше чем top. и не могут быть одним и тем же.
 
             Snapshot topSnapshot = topReferenceSnapshot.getSnapshot();
             Snapshot bottomSnapshot = bottomReferenceSnapshot.getSnapshot();
@@ -258,7 +330,7 @@ public class MainFormController implements Initializable {
 
             for (int i = topSnapshot.getNumber() + 1; i <= bottomSnapshot.getNumber(); i++) {
                 Snapshot snapshot = snapshots.get(i);
-                double xLowestTempPoint = (((bottomLowestTempPoint.getX() - topLowestTempPoint.getX()) * (i - topSnapshot.getNumber())) / (bottomSnapshot.getNumber() - topSnapshot.getNumber())) + topLowestTempPoint.getX();
+                double xLowestTempPoint = (((bottomLowestTempPoint.getX() - topLowestTempPoint.getX()) * (i - topSnapshot.getNumber())) / (bottomSnapshot.getNumber() - topSnapshot.getNumber())) + topLowestTempPoint.getX(); //TODO: refactoring
                 double yLowestTempPoint = (((bottomLowestTempPoint.getY() - topLowestTempPoint.getY()) * (i - topSnapshot.getNumber())) / (bottomSnapshot.getNumber() - topSnapshot.getNumber())) + topLowestTempPoint.getY();
                 int lowestTempAreaCode = snapshot.getAreaAverageCode(xLowestTempPoint, yLowestTempPoint, Calibration.AREA_THRESHOLD);
                 double xHighestTempPoint = (((bottomHighestTempPoint.getX() - topHighestTempPoint.getX()) * (i - topSnapshot.getNumber())) / (bottomSnapshot.getNumber() - topSnapshot.getNumber())) + topHighestTempPoint.getX();
@@ -302,15 +374,13 @@ public class MainFormController implements Initializable {
             System.out.println();
 
             calibrator.calibrate(snapshots, calibration);
-            //todo update right status bar
 
             drawer.drawReferenceSnapshot(canvasTopGc, topReferenceSnapshot);
             drawer.drawReferenceSnapshot(canvasBottomGc, bottomReferenceSnapshot);
-            //todo do calibration;
 
             if (calibrations.size() > 1) {
-                for (int i = calibrations.size() - 2; i >= 0; i--) { //с предпоследнего до первого
-                    Calibration previousCalibration = calibrations.get(i); //TODO REFACTOR!!! RENAME!!!!!!!!!!!!!!
+                for (int i = calibrations.size() - 2; i >= 0; i--) { // From penultimate to first
+                    Calibration previousCalibration = calibrations.get(i);
                     Snapshot snapshot = snapshots.get(previousCalibration.getSnapshotIdsRange().getRight());
                     Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap12345 = previousCalibration.getSnapshotIdReferencePointsMap();
                     int lowestCode = snapshot.getAreaAverageCode(snapshotIdReferencePointsMap12345.get(snapshot.getNumber()).getLeft(), Calibration.AREA_THRESHOLD);
@@ -323,10 +393,7 @@ public class MainFormController implements Initializable {
                     }
 
                     calibrator.calibrate(snapshots, previousCalibration);
-                    //todo update right status bar
-
-
-                }
+                  }
             }
         }
     }
@@ -490,10 +557,11 @@ public class MainFormController implements Initializable {
         };
     }
 
-    private Snapshot parseSnapshot(File file, int fileNumber) { //todo optimize!!!!!!!!!!! and extract
+    private Snapshot parseSnapshot(File file, int fileNumber) { //TODO: refactoring and extract
         try (InputStream inputStream = new FileInputStream(file)) {
             byte[] b = new byte[4];
-            inputStream.read(b);//todo
+            //noinspection ResultOfMethodCallIgnored
+            inputStream.read(b);
             int width = ((b[0] & 0xff)) | ((b[1] & 0xff) << 8);
             int height = ((b[2] & 0xff)) | ((b[3] & 0xff) << 8);
 
@@ -501,6 +569,7 @@ public class MainFormController implements Initializable {
 
             for (int y = 0; y < height; y++) {
                 byte[] line = new byte[width * 2];
+                //noinspection ResultOfMethodCallIgnored
                 inputStream.read(line);
                 for (int x = 0; x < width; x++) {
                     codesMap[y][x] = ((line[x * 2] & 0xff)) | ((line[x * 2 + 1] & 0xff) << 8);

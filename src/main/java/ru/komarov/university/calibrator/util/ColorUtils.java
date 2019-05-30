@@ -13,7 +13,7 @@ import java.util.Map;
  * @author Vasilii Komarov
  */
 @UtilityClass
-public class ColorUtils { //todo rename
+public class ColorUtils {
 
     public static final int NUMBER_OF_CODES = 16384;
     public static final int MIN_CODE = 0;

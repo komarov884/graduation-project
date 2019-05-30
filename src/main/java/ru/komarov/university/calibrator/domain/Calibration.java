@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @Getter
 public class Calibration {
-    public static final int AREA_THRESHOLD = 2; //todo move????
+    public static final int AREA_THRESHOLD = 2; //TODO: move to another class???
 
     private final Pair<Integer, Integer> snapshotIdsRange;
     private final Map<Integer, Pair<Point2D, Point2D>> snapshotIdReferencePointsMap;
